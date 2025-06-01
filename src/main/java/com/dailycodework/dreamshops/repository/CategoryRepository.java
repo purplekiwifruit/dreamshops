@@ -1,4 +1,11 @@
-package com.dailycodework.dreamshops.service.product;
+package com.dailycodework.dreamshops.repository;
 
-interface CategoryRepository extends org.springframework.data.repository.Repository<com.dailycodework.dreamshops.model.Category, java.lang.Long> {
+import com.dailycodework.dreamshops.model.Category;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+
+public interface CategoryRepository extends JpaRepository<Category, Long> {
+    Category findByName(String name);
+
+    boolean existsByName(String name);
 }
