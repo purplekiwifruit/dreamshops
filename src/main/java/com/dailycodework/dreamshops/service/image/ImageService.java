@@ -5,7 +5,6 @@ import com.dailycodework.dreamshops.exception.ResourceNotFoundException;
 import com.dailycodework.dreamshops.model.Image;
 import com.dailycodework.dreamshops.model.Product;
 import com.dailycodework.dreamshops.repository.ImageRepository;
-import com.dailycodework.dreamshops.repository.ProductRepository;
 import com.dailycodework.dreamshops.service.product.IProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -45,7 +44,7 @@ public class ImageService implements IImageService {
         Product product = productService.getProductById(productId);
         List<ImageDto> savedImageDtos = new ArrayList<>();
         for (MultipartFile file : files) {
-            try{
+            try {
                 Image image = new Image();
                 image.setFileName(file.getOriginalFilename());
                 image.setFileType(file.getContentType());
@@ -68,15 +67,14 @@ public class ImageService implements IImageService {
 
                 savedImageDtos.add(imageDto);
 
-            }catch (IOException | SQLException e)
-            {
+            } catch (IOException | SQLException e) {
                 throw new RuntimeException(e.getMessage());
             }
-            return savedImageDtos;
+
         }
 
+        return savedImageDtos;
 
-        return null;
     }
 
     @Override
