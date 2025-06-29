@@ -8,18 +8,19 @@ import com.dailycodework.dreamshops.exception.ResourceNotFoundException;
 import com.dailycodework.dreamshops.model.Cart;
 import com.dailycodework.dreamshops.model.CartItem;
 import com.dailycodework.dreamshops.model.Image;
+import com.dailycodework.dreamshops.model.User;
 import com.dailycodework.dreamshops.repository.CartItemRepository;
 import com.dailycodework.dreamshops.repository.CartRepository;
 import com.dailycodework.dreamshops.service.product.IProductService;
 import com.dailycodework.dreamshops.service.product.ProductService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -55,14 +56,19 @@ public class CartService implements ICartService {
 
     }
 
-
-
+    @Transactional
     @Override
     public void clearCart(Long id) {
-        Cart cart = getCart(id);
-        cartItemRepository.deleteAllByCartId(id);
-        cart.getCartItems().clear();
-        cartRepository.deleteById(id);
+        System.out.println("Using native SQL to delete cart");
+
+        int deletedItems = cartItemRepository.deleteByCartIdNative(id);
+        System.out.println("Deleted " + deletedItems + " cart items");
+
+        int deletedCarts = cartRepository.deleteByIdNative(id);
+        System.out.println("Deleted " + deletedCarts + " carts");
+
+        boolean exists = cartRepository.existsById(id);
+        System.out.println("Cart still exists: " + exists);
     }
 
     @Override
@@ -72,15 +78,17 @@ public class CartService implements ICartService {
     }
 
     @Override
-    public Long initializeNewCart() {
-        Cart newCart = new Cart();
-//        Long newCartId = cartIdGenerator.incrementAndGet();
-//        newCart.setId(newCartId);
-        return  cartRepository.save(newCart).getId();
+    public Cart initializeNewCart(User user) {
+        return Optional.ofNullable(getCartByUserId(user.getId())).orElseGet(() -> {
+            Cart cart = new Cart();
+            cart.setUser(user);
+            cartRepository.save(cart);
+            return cart;
+        });
     }
 
     @Override
     public Cart getCartByUserId(Long userId) {
-        return null;
+        return cartRepository.findByUserId(userId);
     }
 }

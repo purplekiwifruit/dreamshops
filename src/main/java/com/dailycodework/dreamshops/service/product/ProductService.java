@@ -2,6 +2,7 @@ package com.dailycodework.dreamshops.service.product;
 
 import com.dailycodework.dreamshops.dto.ImageDto;
 import com.dailycodework.dreamshops.dto.ProductDto;
+import com.dailycodework.dreamshops.exception.AlreadyExistException;
 import com.dailycodework.dreamshops.exception.ResourceNotFoundException;
 import com.dailycodework.dreamshops.model.Category;
 import com.dailycodework.dreamshops.model.Image;
@@ -32,6 +33,10 @@ public class ProductService implements IProductService {
     public Product addProduct(AddProductRequest request) {
         // Check if the category exists in the DB
         // If Yes, use it; if No, create and save a new category
+
+        if (productExists(request.getName(), request.getBrand())) {
+            throw new AlreadyExistException("Product with name " + request.getName() + " and brand " + request.getBrand() + " already exists! You may update this product instead.");
+        }
         Category category = Optional
                 .ofNullable(categoryRepository.findByName(request.getCategory().getName()))
                 .orElseGet(() -> {
@@ -43,6 +48,10 @@ public class ProductService implements IProductService {
         return productRepository.save(createProduct(request, category));
 
 
+    }
+
+    private boolean productExists(String name, String brand) {
+        return productRepository.existsByNameAndBrand(name,brand);
     }
 
     private Product createProduct(AddProductRequest request, Category category) {
