@@ -71,6 +71,13 @@ The application follows a layered architecture:
 - **Password Encryption**: BCrypt password hashing
 - **CORS Configuration**: Cross-origin resource sharing setup
 
+## 🔐 Authentication Flow
+
+1. User registers/logs in with credentials
+2. Server validates credentials and returns JWT token
+3. Client includes JWT token in Authorization header for protected requests
+4. Server validates token and grants access based on user roles
+
 ## 🗄️ Database Schema
 
 Key entities and relationships:
@@ -81,12 +88,3 @@ Key entities and relationships:
 - **Order** ↔ **OrderItem** (One-to-Many)
 - **Product** ↔ **Category** (Many-to-One)
 - **Product** ↔ **Image** (One-to-Many)
-
-## 🔐 Authentication Flow
-
-1. User registers/logs in with credentials
-2. Server validates credentials and returns JWT token
-3. Client includes JWT token in Authorization header for protected requests
-4. Server validates token and grants access based on user roles
-
-
